@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Health</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'healthapp/style.css' %}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <nav class="navbar">
+        <h2>Smart Health</h2>
+        {% if user.is_authenticated %}
+        <div>
+            <span>Hello, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
+        </div>
+        {% endif %}
+    </nav> -->
+    <div class="{% block container_class %}container{% endblock %}">
+        {% for message in messages %}
+        <p class="msg {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

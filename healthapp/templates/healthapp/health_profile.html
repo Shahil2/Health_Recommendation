@@ -1,0 +1,235 @@
+{% extends 'healthapp/base.html' %}
+{% block container_class %}{% endblock %}
+{% block content %}
+<div class="fixed inset-0 -z-10 h-full w-full bg-[#070707]">
+  <!-- Background Glows -->
+  <div
+    class="absolute top-1/2 left-[10%] -translate-y-1/2 w-[400px] h-[400px] bg-emerald-600/20 rounded-full blur-[120px]">
+  </div>
+  <div
+    class="absolute top-1/2 right-[10%] -translate-y-1/2 w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[120px]">
+  </div>
+</div>
+
+<div class="flex items-center justify-center min-h-screen py-12 px-4">
+  <div
+    class="w-full max-w-4xl p-8 md:p-12 bg-[#121212]/80 backdrop-blur-2xl rounded-[40px] border border-white/5 shadow-2xl">
+
+    <!-- Header -->
+    <div class="flex flex-col items-center mb-10 text-center">
+      <div class="mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+      </div>
+      <h2 class="text-3xl font-bold text-white tracking-tight">Health Profile Analyzer</h2>
+      <p class="mt-2 text-gray-400">Complete your profile to get AI-powered health insights.</p>
+    </div>
+
+    <form method="POST" class="space-y-8">
+      {% csrf_token %}
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Age -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Age</label>
+          <input type="number" name="age" value="{{ profile.age|default:'' }}" required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600"
+            placeholder="e.g. 25">
+        </div>
+
+        <!-- Gender -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Gender</label>
+          <select name="gender" required
+            class="block w-full px-5 py-3.5 text-white bg-[#1a1a1a] border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all appearance-none cursor-pointer">
+            <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+            <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+            <option value="Other" {% if profile.gender == "Other" %}selected{% endif %}>Other</option>
+          </select>
+        </div>
+
+        <!-- Height -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Height (cm)</label>
+          <input type="number" step="0.1" name="height" value="{{ profile.height|default:'' }}" required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600"
+            placeholder="e.g. 175">
+        </div>
+
+        <!-- Weight -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Weight (kg)</label>
+          <input type="number" step="0.1" name="weight" value="{{ profile.weight|default:'' }}" required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600"
+            placeholder="e.g. 70">
+        </div>
+
+        <!-- Blood Pressure -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Blood Pressure</label>
+          <input type="text" name="blood_pressure" placeholder="120/80" value="{{ profile.blood_pressure|default:'' }}"
+            required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600">
+        </div>
+
+        <!-- Sugar Level -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Blood Sugar (mg/dL)</label>
+          <input type="number" step="0.1" name="sugar_level" value="{{ profile.sugar_level|default:'' }}" required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600"
+            placeholder="e.g. 90">
+        </div>
+
+        <!-- Sugar Status -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Sugar Status</label>
+          <select name="sugar_status" required
+            class="block w-full px-5 py-3.5 text-white bg-[#1a1a1a] border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all appearance-none cursor-pointer">
+            <option value="Normal" {% if profile.sugar_status == "Normal" %}selected{% endif %}>Normal</option>
+            <option value="Prediabetes" {% if profile.sugar_status == "Prediabetes" %}selected{% endif %}>Prediabetes
+            </option>
+            <option value="Diabetes" {% if profile.sugar_status == "Diabetes" %}selected{% endif %}>Diabetes</option>
+          </select>
+        </div>
+
+        <!-- Sugar Test Type -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Sugar Test Type</label>
+          <select name="sugar_test_type" required
+            class="block w-full px-5 py-3.5 text-white bg-[#1a1a1a] border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all appearance-none cursor-pointer">
+            <option value="Fasting" {% if profile.sugar_test_type == "Fasting" %}selected{% endif %}>Fasting</option>
+            <option value="Random" {% if profile.sugar_test_type == "Random" %}selected{% endif %}>Random</option>
+          </select>
+        </div>
+
+        <!-- Activity Level -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Activity Level</label>
+          <select name="activity_level" required
+            class="block w-full px-5 py-3.5 text-white bg-[#1a1a1a] border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all appearance-none cursor-pointer">
+            <option value="Low" {% if profile.activity_level == "Low" %}selected{% endif %}>Low</option>
+            <option value="Moderate" {% if profile.activity_level == "Moderate" %}selected{% endif %}>Moderate</option>
+            <option value="High" {% if profile.activity_level == "High" %}selected{% endif %}>High</option>
+          </select>
+        </div>
+
+        <!-- Sleep -->
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-gray-400 ml-1 uppercase tracking-wider">Sleep (hours)</label>
+          <input type="number" step="0.1" name="sleep_hours" value="{{ profile.sleep_hours|default:'' }}" required
+            class="block w-full px-5 py-3.5 text-white bg-white/5 border border-white/10 rounded-2xl focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all placeholder-gray-600"
+            placeholder="e.g. 7.5">
+        </div>
+
+        <!-- Toggles -->
+        <div class="lg:col-span-2 flex items-center space-x-8 pt-4">
+          <label class="flex items-center space-x-3 cursor-pointer group">
+            <div class="relative">
+              <input type="checkbox" name="smoker" {% if profile.smoker %}checked{% endif %} class="sr-only peer">
+              <div
+                class="w-12 h-6 bg-white/10 rounded-full peer-checked:bg-emerald-500/50 transition-all border border-white/10">
+              </div>
+              <div
+                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-6">
+              </div>
+            </div>
+            <span class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Smoker</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer group">
+            <div class="relative">
+              <input type="checkbox" name="alcohol" {% if profile.alcohol %}checked{% endif %} class="sr-only peer">
+              <div
+                class="w-12 h-6 bg-white/10 rounded-full peer-checked:bg-emerald-500/50 transition-all border border-white/10">
+              </div>
+              <div
+                class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all peer-checked:translate-x-6">
+              </div>
+            </div>
+            <span class="text-sm font-medium text-gray-300 group-hover:text-white transition-colors">Alcohol
+              Consumption</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit"
+        class="w-full py-4 text-sm font-bold text-black bg-white rounded-2xl hover:bg-gray-200 focus:outline-none transition-all transform active:scale-[0.98] shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+        Save & Analyze Profile
+      </button>
+    </form>
+
+    {% if score is not None %}
+    <div class="mt-12 space-y-6">
+      <div class="p-8 bg-emerald-500/10 border border-emerald-500/20 rounded-[32px] text-center">
+        <h3 class="text-3xl font-bold text-emerald-400">Health Score: {{ score }}/100</h3>
+        <p class="mt-2 text-emerald-300/80 font-medium">{{ feedback }}</p>
+      </div>
+
+      {% if recommendations %}
+      <div class="p-8 bg-white/5 border border-white/10 rounded-[32px] space-y-8">
+        <div class="flex items-center space-x-3">
+          <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+              <path d="M12 6v6l4 2" />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-white">AI Health Recommendations</h3>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="space-y-4">
+            <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest px-1">Prescribed Lifestyle</h4>
+            <ul class="space-y-3">
+              {% for item in recommendations.rule_based.diet %}
+              <li class="flex items-start space-x-3 text-gray-300">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-emerald-500 rounded-full flex-shrink-0"></span>
+                <span>{{ item }}</span>
+              </li>
+              {% endfor %}
+              {% for item in recommendations.rule_based.exercise %}
+              <li class="flex items-start space-x-3 text-gray-300">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0"></span>
+                <span>{{ item }}</span>
+              </li>
+              {% endfor %}
+              {% for item in recommendations.rule_based.lifestyle %}
+              <li class="flex items-start space-x-3 text-gray-300">
+                <span class="mt-1.5 w-1.5 h-1.5 bg-purple-500 rounded-full flex-shrink-0"></span>
+                <span>{{ item }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <div class="space-y-4">
+            <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest px-1">AI Insights</h4>
+            <div class="p-6 bg-white/5 rounded-2xl border border-white/10">
+              <p id="ai-insights-text" class="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">{{ recommendations.ai_based }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const aiTextElement = document.getElementById('ai-insights-text');
+    if (aiTextElement) {
+      let content = aiTextElement.innerHTML;
+      // Replace **text** with <strong class="text-white font-bold">text</strong>
+      content = content.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white font-bold">$1</strong>');
+      aiTextElement.innerHTML = content;
+    }
+  });
+</script>
+{% endblock %}
