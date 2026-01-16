@@ -99,7 +99,7 @@ Provide:
 1. Overall health assessment in bullet points
 2. Detailed diet advice in bullet points
 3. Exercise recommendations in bullet points
-4. Lifestyle improvements in bullet points
+4. Lifestyle improvements in bullet points(mainly focus on this part and give detailed advice)
 5. Health warnings (if any) in bullet points
 
 Use simple, safe, non-alarming language.
