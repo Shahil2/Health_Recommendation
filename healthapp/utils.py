@@ -82,7 +82,7 @@ def generate_recommendations(profile, bmi, score):
         model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = f"""
-You are a medical health assistant.
+You are a professional medical health assistant.
 
 User Profile:
 Age: {profile.age}
@@ -96,11 +96,11 @@ Sleep Hours: {profile.sleep_hours}
 Health Score: {score}/100
 
 Provide:
-1. Overall health assessment
-2. Detailed diet advice
-3. Exercise recommendations
-4. Lifestyle improvements
-5. Health warnings (if any)
+1. Overall health assessment in bullet points
+2. Detailed diet advice in bullet points
+3. Exercise recommendations in bullet points
+4. Lifestyle improvements in bullet points
+5. Health warnings (if any) in bullet points
 
 Use simple, safe, non-alarming language.
 """
