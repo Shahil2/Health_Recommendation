@@ -1,8 +1,11 @@
-import google.generativeai as genai
+from google import genai
 from django.conf import settings
 
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
+# Initialize the client outside the function (optional, or inside)
+# For better performance/connection reuse, we can initialize it once if API key is static
+# However, to be safe with Django settings loading, checking inside might be safer or using a lazy init.
+# But usually module level is fine if settings are ready. 
+# Let's instantiate client inside seeing as settings are imported.
 
 def generate_recommendations(profile, bmi, score):
     print("DEBUG: generate_recommendations() CALLED")
@@ -37,10 +40,10 @@ def generate_recommendations(profile, bmi, score):
     ai_text = "AI advice unavailable."
 
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash-lite")
-
-        response = model.generate_content(
-            f"""
+        client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash-lite",
+            contents= f"""
 You are a friendly AI health assistant.
 
 Age: {profile.age}
