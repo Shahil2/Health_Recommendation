@@ -62,3 +62,32 @@ class HealthProfile(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Health Profile"
 
+
+class MedicalReport(models.Model):
+    """User-uploaded medical report (PDF or image) with AI analysis."""
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='medical_reports/%Y/%m/', max_length=255)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    # AI analysis results (stored as JSON-friendly text)
+    raw_text = models.TextField(blank=True, null=True)
+    summary = models.TextField(blank=True, null=True)
+    lifestyle_advice = models.TextField(blank=True, null=True)
+    medicine_suggestions = models.TextField(blank=True, null=True)
+    doctor_suggestions = models.TextField(blank=True, null=True)
+    conditions_notes = models.TextField(blank=True, null=True)
+
+    # Extracted health metrics for charts
+    extracted_metrics = models.JSONField(default=list, blank=True)
+
+    # Structured plans (no paragraphs) - easy visual display
+    # lifestyle_plan: [{"category":"Sleep","items":["7-8 hrs","..."]}, ...]
+    # workout_plan: [{"type":"Cardio","activities":["Walk 30min"],"duration":"30 min","frequency":"5x/week"}, ...]
+    # diet_plan: [{"meal":"Breakfast","foods":["Oats","Fruit"],"avoid":["Sugar"],"tips":"..."}, ...]
+    lifestyle_plan = models.JSONField(default=list, blank=True)
+    workout_plan = models.JSONField(default=list, blank=True)
+    diet_plan = models.JSONField(default=list, blank=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.file.name} ({self.uploaded_at.date()})"
+

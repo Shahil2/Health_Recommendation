@@ -1,11 +1,13 @@
+import json
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
-from .models import BMIRecord, HealthProfile
+from .models import BMIRecord, HealthProfile, MedicalReport
 from .services.health_analyzer import generate_recommendations
+from .services.report_analyzer import extract_report_content, analyze_medical_report
 
 
 
@@ -140,17 +142,10 @@ def health_profile(request):
             # -------- AI + RULE-BASED RECOMMENDATIONS --------
             
             recommendations = generate_recommendations(
-                profile=profile,   # ← use saved DB object
+                profile=profile,
                 bmi=bmi,
                 score=score
             )
-            print("AI OUTPUT:", recommendations)
-            recommendations = generate_recommendations(profile, bmi, score)
-
-            print("DEBUG TYPE:", type(recommendations))
-            print("DEBUG CONTENT:", recommendations)
-
-
             messages.success(request, "Health profile analyzed successfully!")
 
         except (ValueError, TypeError):
@@ -206,3 +201,73 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('login')
+
+
+# ---------------- MEDICAL REPORTS ----------------
+@login_required(login_url='login')
+def report_upload(request):
+    """Upload medical report (PDF or image) for analysis."""
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('report_file')
+        if not uploaded_file:
+            messages.error(request, "Please select a file.")
+            return redirect('report_upload')
+
+        ext = uploaded_file.name.lower().split('.')[-1] if '.' in uploaded_file.name else ''
+        if ext not in ('pdf', 'png', 'jpg', 'jpeg', 'webp'):
+            messages.error(request, "Only PDF, PNG, and JPG files are allowed.")
+            return redirect('report_upload')
+
+        if uploaded_file.size > 10 * 1024 * 1024:  # 10 MB
+            messages.error(request, "File size must be under 10 MB.")
+            return redirect('report_upload')
+
+        report = MedicalReport.objects.create(user=request.user, file=uploaded_file)
+        file_path = report.file.path
+
+        text, content_type = extract_report_content(file_path)
+        if content_type is None:
+            messages.error(request, "Unsupported file format.")
+            report.delete()
+            return redirect('report_upload')
+
+        report.raw_text = text if content_type == "text" else "[Image - analyzed by AI vision]"
+        report.save()
+
+        result = analyze_medical_report(file_path, extracted_text=text, is_image=(content_type == "image"))
+        report.summary = result.get("summary", "")
+        report.lifestyle_advice = result.get("lifestyle_advice", "")
+        report.medicine_suggestions = result.get("medicine_suggestions", "")
+        report.doctor_suggestions = result.get("doctor_suggestions", "")
+        report.conditions_notes = result.get("conditions_notes", "")
+        report.extracted_metrics = result.get("extracted_metrics", [])
+        report.lifestyle_plan = result.get("lifestyle_plan", [])
+        report.workout_plan = result.get("workout_plan", [])
+        report.diet_plan = result.get("diet_plan", [])
+        report.save()
+
+        messages.success(request, "Report analyzed successfully!")
+        return redirect('report_detail', report_id=report.pk)
+
+    return render(request, 'healthapp/report_upload.html')
+
+
+@login_required(login_url='login')
+def report_list(request):
+    """List all medical reports for the current user."""
+    reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
+    return render(request, 'healthapp/report_list.html', {'reports': reports})
+
+
+@login_required(login_url='login')
+def report_detail(request, report_id):
+    """View details and AI analysis for a single report."""
+    report = MedicalReport.objects.filter(user=request.user, pk=report_id).first()
+    if not report:
+        messages.error(request, "Report not found.")
+        return redirect('report_list')
+    metrics = getattr(report, 'extracted_metrics', None) or []
+    return render(request, 'healthapp/report_detail.html', {
+        'report': report,
+        'metrics_json': json.dumps(metrics),
+    })
