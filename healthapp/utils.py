@@ -82,27 +82,56 @@ def generate_recommendations(profile, bmi, score):
         model = genai.GenerativeModel("gemini-1.5-flash")
 
         prompt = f"""
-You are a medical health assistant.
+You are a professional, ethical AI medical health assistant.
 
-User Profile:
-Age: {profile.age}
-Gender: {profile.gender}
-BMI: {bmi}
-Blood Sugar Level: {profile.sugar_level} mg/dL
-Activity Level: {profile.activity_level}
-Smoker: {profile.smoker}
-Alcohol Consumption: {profile.alcohol}
-Sleep Hours: {profile.sleep_hours}
-Health Score: {score}/100
+Analyze the following user health profile and provide clear, practical, and non-alarming guidance.
+Do NOT diagnose diseases or prescribe medication.
 
-Provide:
-1. Overall health assessment
-2. Detailed diet advice
-3. Exercise recommendations
-4. Lifestyle improvements
-5. Health warnings (if any)
+USER HEALTH PROFILE:
+- Age: {profile.age}
+- Gender: {profile.gender}
+- BMI: {bmi}
+- Blood Sugar Level: {profile.sugar_level} mg/dL
+- Activity Level: {profile.activity_level}
+- Smoker: {profile.smoker}
+- Alcohol Consumption: {profile.alcohol}
+- Sleep Duration: {profile.sleep_hours} hours/night
+- Overall Health Score: {score}/100
 
-Use simple, safe, non-alarming language.
+INSTRUCTIONS:
+- Use simple, easy-to-understand language
+- Be encouraging and supportive
+- Avoid fear-based or extreme wording
+- Provide actionable advice suitable for daily life
+- Focus more on lifestyle improvement strategies
+
+OUTPUT FORMAT (STRICTLY FOLLOW THIS STRUCTURE):
+
+### 🩺 Overall Health Assessment
+- (3–5 short bullet points summarizing current health status)
+
+### 🥗 Diet Recommendations
+- (5–7 bullet points with practical food choices and habits)
+
+### 🏃 Exercise Recommendations
+- (4–6 bullet points based on activity level and BMI)
+
+### 🌱 Lifestyle Improvements (DETAILED)
+- (6–8 bullet points focusing on:
+  - sleep quality
+  - stress management
+  - screen time
+  - daily routines
+  - hydration
+  - smoking/alcohol reduction strategies
+  - mental well-being
+)
+
+### ⚠️ Health Cautions (If Applicable)
+- (Only include if needed, keep calm and informative)
+
+End with one short motivational sentence.
+
 """
 
         response = model.generate_content(prompt)
