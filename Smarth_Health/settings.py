@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-1@p^hdn_g3m$7^xwtn8k#+14sphzfym5p1!=11)^q&i3*y@n!1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
 
 
 # Application definition
@@ -131,6 +131,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'healthapp/static'),
 ]
 
+# Media files (user uploads)
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
