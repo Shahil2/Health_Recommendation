@@ -12,21 +12,25 @@
 </div>
 
 <!-- Header / Navbar -->
-<nav class="sticky top-0 z-50 bg-[#070707]/80 backdrop-blur-md border-b border-white/5 px-8 py-5">
+<nav class="sticky top-0 z-50 bg-[#070707]/80 backdrop-blur-md border-b border-white/5 px-4 md:px-8 py-4">
     <div class="max-w-7xl mx-auto flex justify-between items-center">
-        <h1 class="text-2xl font-bold text-emerald-400 tracking-tight">Smart Health</h1>
-        <div class="flex items-center gap-6">
-            <a href="{% url 'report_list' %}" class="text-sm font-semibold text-gray-400 hover:text-emerald-400 transition-colors">Medical Reports</a>
-            <a href="{% url 'logout' %}" class="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">Logout</a>
+        <h1 class="text-xl md:text-2xl font-bold text-emerald-400 tracking-tight">Smart Health</h1>
+        <div class="flex items-center gap-4 md:gap-6">
+            <a href="{% url 'report_list' %}"
+                class="text-xs md:text-sm font-semibold text-gray-400 hover:text-emerald-400 transition-colors">Reports</a>
+            <a href="{% url 'logout' %}"
+                class="text-xs md:text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">Logout</a>
         </div>
     </div>
 </nav>
 
-<div class="max-w-6xl mx-auto px-4 py-16">
+<div class="max-w-6xl mx-auto px-2 md:px-4 py-6 md:py-16">
     <!-- Main Dashboard Card -->
-    <div class="bg-[#121212]/80 backdrop-blur-2xl rounded-[48px] border border-white/5 shadow-2xl p-10 md:p-16">
-        <div class="text-center mb-16">
-            <div class="inline-block mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 text-emerald-400">
+    <div
+        class="bg-[#121212]/80 backdrop-blur-2xl rounded-[32px] md:rounded-[48px] border border-white/5 shadow-2xl p-6 md:p-16">
+        <div class="text-center mb-10 md:mb-16">
+            <div
+                class="inline-block mb-4 md:mb-6 p-3 md:p-4 bg-white/5 rounded-2xl border border-white/10 text-emerald-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
@@ -41,8 +45,8 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
             <!-- BMI Calculator Card -->
             <div
-                class="relative group p-10 bg-[#161616]/50 rounded-[32px] border border-white/5 hover:border-emerald-500/20 transition-all flex flex-col items-center">
-                <h3 class="text-xl font-bold text-white mb-8 flex items-center">
+                class="relative group p-6 md:p-10 bg-[#161616]/50 rounded-[24px] md:rounded-[32px] border border-white/5 hover:border-emerald-500/20 transition-all flex flex-col items-center">
+                <h3 class="text-lg md:text-xl font-bold text-white mb-6 md:mb-8 flex items-center">
                     <span class="mr-3 p-2 bg-emerald-500/10 rounded-lg">🧮</span> BMI Calculator
                 </h3>
 
@@ -112,7 +116,8 @@
                         <span class="mr-3 p-2 bg-emerald-500/10 rounded-lg">📄</span> Medical Reports
                     </h3>
                     <p class="text-gray-400 text-base leading-relaxed mb-12">
-                        Upload your medical reports (PDF or image) for AI analysis. Get lifestyle advice, medicine suggestions, and doctor referrals.
+                        Upload your medical reports (PDF or image) for AI analysis. Get lifestyle advice, medicine
+                        suggestions, and doctor referrals.
                     </p>
                 </div>
 
