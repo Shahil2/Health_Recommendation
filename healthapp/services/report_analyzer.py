@@ -4,12 +4,13 @@ from django.conf import settings
 import os
 import json
 import re
+from PIL import Image
+import fitz  # PyMuPDF
 
 
 def _extract_text_from_pdf(file_path):
     """Extract text from PDF using PyMuPDF."""
     try:
-        import fitz  # PyMuPDF
         doc = fitz.open(file_path)
         text_parts = []
         for page in doc:
@@ -181,7 +182,6 @@ Adapt to report (diabetes=sugar control, BP=salt limit, etc.). Use local foods i
 
     try:
         if is_image and file_path and os.path.exists(file_path):
-            from PIL import Image
             img = Image.open(file_path)
             if img.mode == "RGBA":
                 img = img.convert("RGB")
