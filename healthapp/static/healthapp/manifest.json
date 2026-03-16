@@ -1,0 +1,16 @@
+{
+  "name": "Smart Health",
+  "short_name": "HealthApp",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#070707",
+  "theme_color": "#10b981",
+  "description": "AI-powered health recommendation and medical report analyzer.",
+  "icons": [
+    {
+      "src": "/static/healthapp/images/app_icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

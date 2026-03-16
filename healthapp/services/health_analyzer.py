@@ -37,7 +37,7 @@ def generate_recommendations(profile, bmi, score):
     ai_text = "AI advice unavailable."
 
     try:
-        model = genai.GenerativeModel("gemini-2.5-flash-lite")
+        model = genai.GenerativeModel("models/gemini-flash-latest")
 
         response = model.generate_content(
             f"""
