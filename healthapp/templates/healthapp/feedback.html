@@ -1,0 +1,72 @@
+{% extends 'healthapp/base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-12 pb-20">
+    <!-- Header -->
+    <div class="text-center space-y-4 pt-8">
+        <span class="px-4 py-1 bg-sky-500/10 text-sky-500 text-xs font-bold rounded-full uppercase tracking-[0.2em] border border-sky-500/20">Communication</span>
+        <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight">App Feedback</h2>
+        <p class="text-gray-500 max-w-lg mx-auto">Have a suggestion or found a bug? Send a message directly to the developer.</p>
+    </div>
+
+    <div class="relative group">
+        <div class="absolute -inset-1 bg-gradient-to-r from-sky-500 to-indigo-600 rounded-[48px] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
+        <div class="relative p-8 md:p-12 bg-[#0d0d0d] rounded-[48px] border border-white/5">
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-1">Your Name</label>
+                        <input type="text" name="name" value="{{ user.username }}" required
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-sky-500/50 transition-all font-medium">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-1">Email Address</label>
+                        <input type="email" name="email" value="{{ user.email }}" required
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-sky-500/50 transition-all font-medium">
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-1">Subject</label>
+                    <input type="text" name="subject" placeholder="Feature Suggestion, Bug Report, etc." required
+                        class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:border-sky-500/50 transition-all font-medium">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-[10px] text-gray-500 uppercase tracking-widest font-bold px-1">Message</label>
+                    <textarea name="message" rows="6" placeholder="Describe your experience or suggestions here..." required
+                        class="w-full bg-white/5 border border-white/10 rounded-3xl px-6 py-4 text-white outline-none focus:border-sky-500/50 transition-all font-medium resize-none"></textarea>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                        class="w-full py-5 bg-sky-500 text-black font-black rounded-3xl hover:bg-sky-400 transition-all shadow-[0_0_30px_rgba(14,165,233,0.3)] flex items-center justify-center gap-3 group">
+                        <span>Send Feedback</span>
+                        <span class="group-hover:translate-x-1 transition-transform">🚀</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Support -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-8 bg-[#121212] border border-white/5 rounded-[32px] text-center space-y-3">
+            <span class="text-3xl">🛠️</span>
+            <h4 class="text-white font-bold">Tech Support</h4>
+            <p class="text-xs text-gray-500">Reporting a technical issue.</p>
+        </div>
+        <div class="p-8 bg-[#121212] border border-white/5 rounded-[32px] text-center space-y-3">
+            <span class="text-3xl">✨</span>
+            <h4 class="text-white font-bold">New Features</h4>
+            <p class="text-xs text-gray-500">Requesting new AI helpers.</p>
+        </div>
+        <div class="p-8 bg-[#121212] border border-white/5 rounded-[32px] text-center space-y-3">
+            <span class="text-3xl">❤️</span>
+            <h4 class="text-white font-bold">General Praise</h4>
+            <p class="text-xs text-gray-500">Share your success stories.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
