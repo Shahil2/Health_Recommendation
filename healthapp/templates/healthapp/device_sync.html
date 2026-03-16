@@ -1,0 +1,113 @@
+{% extends 'healthapp/base.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto space-y-8 pb-12">
+    <!-- Header -->
+    <div class="p-8 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] rounded-[40px] border border-white/5 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-10 -top-10 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl"></div>
+        <div class="relative z-10">
+            <h2 class="text-3xl font-bold text-white mb-2">Connect Your Devices</h2>
+            <p class="text-gray-400">Sync with your Smartband, Watch, or Health Sensors</p>
+        </div>
+    </div>
+
+    <!-- Connection Status -->
+    <div class="p-8 bg-[#121212] border border-white/5 rounded-[40px]">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div class="flex items-center gap-6">
+                <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-3xl">
+                    {% if is_connected %}✅{% else %}📡{% endif %}
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">
+                        {% if is_connected %}SmartBand Connected{% else %}Found 1 Nearby Device{% endif %}
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                        {% if is_connected %}Last synced: Just now{% else %}Tap to pair with "SmartHealth-Band v2"{% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            {% if is_connected %}
+            <a href="?connected=false" class="px-8 py-4 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl font-bold transition-all">
+                Disconnect Device
+            </a>
+            {% else %}
+            <a href="?connected=true" class="px-8 py-4 bg-cyan-500 text-black rounded-2xl font-bold hover:bg-cyan-400 transition-all">
+                Sync Now
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Data Display (Conditional) -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Steps -->
+        <div class="p-8 bg-[#121212]/50 border border-white/5 rounded-[32px] hover:border-cyan-500/30 transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <span class="p-3 bg-cyan-500/10 rounded-xl">👣</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Steps</span>
+            </div>
+            <p class="text-4xl font-black text-white mb-1">
+                {% if is_connected %}{{ stats.steps }}{% else %}--{% endif %}
+            </p>
+            <p class="text-xs text-gray-400">Goal: 10,000</p>
+        </div>
+
+        <!-- Heart Rate -->
+        <div class="p-8 bg-[#121212]/50 border border-white/5 rounded-[32px] hover:border-pink-500/30 transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <span class="p-3 bg-pink-500/10 rounded-xl">💓</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Heart Rate</span>
+            </div>
+            <p class="text-4xl font-black text-white mb-1">
+                {% if is_connected %}{{ stats.heart_rate }} <small class="text-sm">BPM</small>{% else %}--{% endif %}
+            </p>
+            <p class="text-xs text-gray-400">Status: {% if is_connected %}Normal{% else %}N/A{% endif %}</p>
+        </div>
+
+        <!-- BP -->
+        <div class="p-8 bg-[#121212]/50 border border-white/5 rounded-[32px] hover:border-indigo-500/30 transition-all">
+            <div class="flex justify-between items-start mb-6" >
+                <span class="p-3 bg-indigo-500/10 rounded-xl">🩸</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Blood Pressure</span>
+            </div>
+            <p class="text-4xl font-black text-white mb-1">
+                {% if is_connected %}{{ stats.blood_pressure }}{% else %}--{% endif %}
+            </p>
+            <p class="text-xs text-gray-400">Systolic/Diastolic</p>
+        </div>
+
+        <!-- Calories -->
+        <div class="p-8 bg-[#121212]/50 border border-white/5 rounded-[32px] hover:border-amber-500/30 transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <span class="p-3 bg-amber-500/10 rounded-xl">🔥</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Calories</span>
+            </div>
+            <p class="text-4xl font-black text-white mb-1">
+                {% if is_connected %}{{ stats.calories }} <small class="text-sm">kcal</small>{% else %}--{% endif %}
+            </p>
+            <p class="text-xs text-gray-400">Active calories burned</p>
+        </div>
+
+        <!-- Sleep -->
+        <div class="p-8 bg-[#121212]/50 border border-white/5 rounded-[32px] hover:border-purple-500/30 transition-all">
+            <div class="flex justify-between items-start mb-6">
+                <span class="p-3 bg-purple-500/10 rounded-xl">🌙</span>
+                <span class="text-[10px] text-gray-500 uppercase tracking-widest">Sleep</span>
+            </div>
+            <p class="text-4xl font-black text-white mb-1">
+                {% if is_connected %}{{ stats.sleep_hours }} <small class="text-sm">hrs</small>{% else %}--{% endif %}
+            </p>
+            <p class="text-xs text-gray-400">Deep sleep recorded</p>
+        </div>
+    </div>
+
+    <!-- Restricted Feature Notice -->
+    {% if not is_connected %}
+    <div class="p-8 bg-sky-500/5 border border-sky-500/20 rounded-[32px] text-center">
+        <p class="text-sky-400 font-bold mb-2">Connect a device to unlock full automation</p>
+        <p class="text-sm text-gray-500">Your health dashboard will automatically update with live sensor data once a device is paired.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
