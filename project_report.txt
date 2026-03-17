@@ -67,7 +67,15 @@ guidance for a healthier life.
 5.  Action: User receives and follows tailored workout and diet plans.
 6.  Monitoring: Daily logging of activities to maintain habit streaks.
 
-7. CONCLUSION & FUTURE SCOPE
+8. SECURITY & CONFIGURATION
+---------------------------
+*   Environment Variables: Sensitive data (API keys, secrets) are managed via 
+    a `.env` file, which is excluded from version control for security.
+*   API Key Protection: System is configured to ignore `.env` and history files 
+    in Git to prevent accidental leaks.
+*   Data Privacy: User health data is stored securely in the local database.
+
+9. CONCLUSION & FUTURE SCOPE
 ----------------------------
 Smart Health serves as a robust proof-of-concept for AI in personal healthcare. 
 Future enhancements include IoT device integration for real-time vitals, 

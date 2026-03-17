@@ -1,5 +1,6 @@
 db.sqlite3
 .env
+env_history.txt
 log.txt
 requirements.txt
 
