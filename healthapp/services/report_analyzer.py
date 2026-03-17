@@ -86,7 +86,7 @@ def analyze_medical_report(file_path, extracted_text=None, is_image=False):
     conditions_notes, extracted_metrics (list of {name, value, unit, status, normal_range})
     """
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.5-flash-lite")
+    model = genai.GenerativeModel("models/gemini-flash-latest")
 
     prompt = """
 You are a friendly health assistant. Analyze this medical report.

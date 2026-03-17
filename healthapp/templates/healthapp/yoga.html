@@ -1,0 +1,92 @@
+{% extends 'healthapp/base.html' %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 pb-12">
+    <!-- Hero Section -->
+    <div class="relative h-64 md:h-80 rounded-[40px] overflow-hidden flex items-center justify-center text-center p-8 bg-gradient-to-br from-indigo-900 via-purple-900 to-indigo-950 border border-white/5">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=2000')] opacity-20 mix-blend-overlay bg-cover bg-center"></div>
+        <div class="relative z-10 space-y-4">
+            <h2 class="text-4xl md:text-6xl font-black text-white tracking-tight italic">YO-GA</h2>
+            <p class="text-indigo-200 text-lg md:text-xl font-medium max-w-2xl mx-auto">Find your inner peace and physical balance through ancient wisdom and modern AI guidance.</p>
+            <div class="flex gap-4 justify-center">
+                <a href="?mode=normal" class="px-6 py-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-all {% if mode == 'normal' %}bg-white/20{% endif %}">Classic Yoga</a>
+                <a href="?mode=medical" class="px-6 py-2 rounded-full border border-white/20 text-white hover:bg-white/10 transition-all {% if mode == 'medical' %}bg-white/20{% endif %}">Therapeutic Yoga</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    {% if yoga_plan.error %}
+    <div class="p-12 text-center bg-red-500/10 border border-red-500/20 rounded-[40px]">
+        <p class="text-red-400 font-bold">Something went wrong...</p>
+        <p class="text-gray-500 mt-2">{{ yoga_plan.error }}</p>
+        <a href="{% url 'yoga' %}" class="inline-block mt-6 px-8 py-3 bg-red-500 text-white rounded-2xl font-bold">Try Again</a>
+    </div>
+    {% else %}
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar Navigation (Days) -->
+        <div class="lg:col-span-1 space-y-3">
+             <div class="p-6 bg-[#121212] border border-white/5 rounded-3xl sticky top-24">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6 px-2">Weekly Journey</h3>
+                <div class="space-y-2">
+                    {% for day in yoga_plan.days %}
+                    <a href="#day-{{ forloop.counter }}" class="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 text-gray-400 hover:text-white transition-all group border border-transparent hover:border-white/5">
+                        <span class="font-bold">{{ day.day }}</span>
+                        <span class="text-[10px] opacity-50 group-hover:opacity-100 italic">{{ day.focus|truncatechars:12 }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Plan Details -->
+        <div class="lg:col-span-3 space-y-12">
+            <div class="p-10 bg-[#121212] border border-white/5 rounded-[48px] shadow-2xl">
+                <h2 class="text-3xl font-black text-white mb-4">{{ yoga_plan.title }}</h2>
+                <p class="text-gray-400 leading-relaxed">{{ yoga_plan.description }}</p>
+            </div>
+
+            {% for day in yoga_plan.days %}
+            <div id="day-{{ forloop.counter }}" class="space-y-6 scroll-mt-24">
+                <div class="flex items-center gap-4">
+                    <span class="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center text-black font-black text-xl shadow-[0_0_20px_rgba(99,102,241,0.4)]">
+                        {{ day.day|slice:":1" }}
+                    </span>
+                    <div>
+                        <h3 class="text-2xl font-black text-white">{{ day.day }}</h3>
+                        <p class="text-indigo-400 font-bold uppercase tracking-widest text-[10px]">{{ day.focus }}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for pose in day.poses %}
+                    <div class="p-8 bg-gradient-to-br from-[#1a1a1a] to-[#0d0d0d] border border-white/5 rounded-[32px] hover:border-indigo-500/30 transition-all group shadow-xl">
+                        <div class="flex justify-between items-start mb-6">
+                            <h4 class="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors">{{ pose.name }}</h4>
+                            <span class="px-3 py-1 bg-white/5 rounded-full text-[10px] text-gray-500 font-bold border border-white/5">{{ pose.duration }}</span>
+                        </div>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-6">{{ pose.benefit }}</p>
+                        <div class="flex flex-col gap-4">
+                            <div class="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+                                <span>🧘‍♀️</span> Focus on alignment
+                            </div>
+                            <a href="https://www.youtube.com/results?search_query={{ pose.name|urlencode }}+yoga+pose+form" target="_blank" class="flex items-center justify-center gap-2 w-full py-3 bg-white/5 hover:bg-indigo-500/20 text-indigo-400 rounded-2xl transition-all font-bold text-xs uppercase tracking-widest border border-white/5">
+                                <span>▶️</span> Pose Video Guide
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer Guide -->
+    <div class="p-10 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-white/5 rounded-[40px] text-center">
+        <h3 class="text-2xl font-bold text-white mb-2">Consistency is Key</h3>
+        <p class="text-gray-400 mb-6 max-w-xl mx-auto text-sm">Yoga is a journey of 1,000 miles that starts with a single breath. Keep your streak alive to unlock advanced pranayama techniques.</p>
+        <a href="{% url 'home' %}" class="inline-block px-8 py-4 bg-indigo-500 text-black font-bold rounded-2xl hover:bg-indigo-400 transition-all shadow-[0_0_30px_rgba(99,102,241,0.3)]">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

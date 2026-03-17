@@ -1,0 +1,106 @@
+{% extends 'healthapp/base.html' %}
+{% block container_class %}{% endblock %}
+{% block content %}
+<div class="fixed inset-0 -z-10 h-full w-full bg-[#070707]">
+    <div class="absolute top-[10%] right-[10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[140px]"></div>
+    <div class="absolute bottom-[10%] left-[10%] w-[400px] h-[400px] bg-emerald-600/10 rounded-full blur-[120px]"></div>
+</div>
+
+<nav class="sticky top-0 z-50 bg-[#070707]/80 backdrop-blur-md border-b border-white/5 px-8 py-5">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-emerald-400 tracking-tight">Smart Health</h1>
+        <div class="flex items-center gap-6">
+            <a href="{% url 'home' %}" class="text-sm font-semibold text-gray-400 hover:text-emerald-400 transition-colors">Dashboard</a>
+            <a href="{% url 'health_profile' %}" class="text-sm font-semibold text-gray-400 hover:text-emerald-400 transition-colors">Risk Assessment</a>
+            <a href="{% url 'logout' %}" class="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="max-w-6xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <div class="text-center mb-16">
+        <div class="inline-block p-4 bg-purple-500/10 rounded-3xl border border-purple-500/20 text-purple-400 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h2 class="text-4xl font-bold text-white tracking-tight">Your Weekly Health Roadmap</h2>
+        <p class="mt-3 text-lg text-gray-400">Personalized Workout and Diet plans based on your Health Profile.</p>
+    </div>
+
+    {% if plans.error %}
+        <div class="p-8 bg-red-500/10 border border-red-500/20 rounded-[32px] text-red-400 text-center">
+            {{ plans.error }}
+        </div>
+    {% else %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <!-- WORKOUT PLAN (Left 2 Col) -->
+            <div class="lg:col-span-2 space-y-8">
+                <h3 class="text-2xl font-bold text-white flex items-center">
+                    <span class="mr-3 p-2 bg-emerald-500/20 rounded-xl text-emerald-400">🏃‍♂️</span> 7-Day Workout Routine
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {% for day in plans.workout_plan %}
+                        <div class="bg-[#121212]/80 p-8 rounded-[32px] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="px-4 py-1.5 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">{{ day.day }}</span>
+                                <span class="text-xs text-gray-500">{{ day.duration }}</span>
+                            </div>
+                            <ul class="space-y-3">
+                                {% for act in day.activities %}
+                                    <li class="text-gray-300 flex items-start">
+                                        <span class="text-emerald-500 mr-2">➹</span> {{ act }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- DIET & TIPS (Right 1 Col) -->
+            <div class="space-y-10">
+                <!-- Diet Section -->
+                <div class="bg-gradient-to-b from-purple-600/10 to-transparent p-10 rounded-[40px] border border-white/10">
+                    <h3 class="text-2xl font-bold text-white mb-8 flex items-center">
+                        <span class="mr-3 p-2 bg-purple-500/20 rounded-xl text-purple-400">🥗</span> Daily Diet Guide
+                    </h3>
+                    
+                    <div class="space-y-8">
+                        {% for meal in plans.diet_plan %}
+                            <div class="space-y-3">
+                                <h4 class="text-sm font-bold text-purple-400 uppercase tracking-widest">{{ meal.meal }}</h4>
+                                <div class="p-4 bg-white/5 rounded-2xl">
+                                    <p class="text-gray-200 text-sm mb-2">Options: 
+                                        <span class="text-gray-400">{% for f in meal.options %}{{ f }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                                    </p>
+                                    <p class="text-xs text-red-400/80">Avoid: 
+                                        <span>{% for a in meal.avoid %}{{ a }}{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Lifestyle Tips -->
+                <div class="bg-[#121212]/80 p-8 rounded-[40px] border border-white/5">
+                    <h3 class="text-xl font-bold text-white mb-6">General Advice</h3>
+                    <ul class="space-y-4">
+                        {% for tip in plans.lifestyle_tips %}
+                            <li class="flex items-start bg-white/5 p-4 rounded-2xl">
+                                <span class="mr-3 mt-1">✨</span>
+                                <p class="text-sm text-gray-300">{{ tip }}</p>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="mt-16 text-center">
+        <p class="text-gray-500 text-sm italic">These plans are generated by AI based on your profile inputs. Always consult a healthcare professional before starting new regimes.</p>
+    </div>
+</div>
+{% endblock %}

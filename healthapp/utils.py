@@ -79,7 +79,7 @@ def generate_recommendations(profile, bmi, score):
     try:
         genai.configure(api_key=settings.GEMINI_API_KEY)
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel("models/gemini-flash-latest")
 
         prompt = f"""
 You are a professional, ethical AI medical health assistant.

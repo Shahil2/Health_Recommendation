@@ -56,12 +56,28 @@ class HealthProfile(models.Model):
     alcohol = models.BooleanField(default=False)
 
     sleep_hours = models.FloatField(default=7.0)
+    
+    current_streak = models.PositiveIntegerField(default=0)
+    last_streak_date = models.DateField(null=True, blank=True)
+    total_activities_completed = models.PositiveIntegerField(default=0)
 
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.user.username}'s Health Profile"
 
+class UserActivityTrack(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+    workout_completed = models.BooleanField(default=False)
+    diet_followed = models.BooleanField(default=False)
+    medicine_taken = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ('user', 'date')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"
 
 class MedicalReport(models.Model):
     """User-uploaded medical report (PDF or image) with AI analysis."""
@@ -91,3 +107,14 @@ class MedicalReport(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.file.name} ({self.uploaded_at.date()})"
 
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Feedback from {self.name} - {self.subject}"
