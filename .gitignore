@@ -1,4 +1,33 @@
-db.sqlite3
+# Python
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
 .env
+env_history.txt
+venv/
+env/
+.venv/
+auth_token.json
+
+# Database
+db.sqlite3
+
+# Logs
+*.log
 log.txt
-requirements.txt    
+
+# Media
+media/
+
+# Archives
+*.zip
+*.rar
+*.tar.gz
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
