@@ -29,6 +29,12 @@
             user-select: text;
         }
     </style>
+    <script>
+        // Check local storage before rendering to prevent FOUC (Flash Of Unstyled Content)
+        if (localStorage.getItem('smarthealth_theme') === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+    </script>
 </head>
 
 <body>
@@ -124,6 +130,9 @@
                     <p class="text-sm font-bold text-amber-500 mt-1">🔥 {{ profile.current_streak }} Days</p>
                 </div>
                 {% endif %}
+                <button onclick="toggleTheme()" id="themeToggleBtn" class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-xl border border-white/5 transition-colors hover:bg-white/10" title="Toggle Light/Dark Mode">
+                    ☀️
+                </button>
                 <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-sky-400 border border-white/5">
                     {{ request.user.username|slice:":1"|upper }}
                 </div>
@@ -154,6 +163,34 @@
     </div>
 
     <script>
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            document.documentElement.classList.toggle('light-theme');
+            const isLight = document.documentElement.classList.contains('light-theme');
+            localStorage.setItem('smarthealth_theme', isLight ? 'light' : 'dark');
+            updateThemeIcon();
+        }
+
+        function updateThemeIcon() {
+            const btn = document.getElementById('themeToggleBtn');
+            if (btn) {
+                if (document.documentElement.classList.contains('light-theme')) {
+                    btn.innerHTML = '🌙'; // Currently light, show moon
+                } else {
+                    btn.innerHTML = '☀️'; // Currently dark, show sun
+                }
+            }
+        }
+
+        // Check local storage on initial load to prevent flashing
+        if (localStorage.getItem('smarthealth_theme') === 'light') {
+            document.documentElement.classList.add('light-theme');
+        }
+        
+        // Wait for DOM to update icon
+        document.addEventListener('DOMContentLoaded', updateThemeIcon);
+
+        // --- Original Scripts ---
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('sidebarOverlay');
@@ -188,6 +225,41 @@
                 document.getElementById('loadingOverlay').classList.add('hidden');
             }
         };
+
+        // --- Touchable Feel (Ripple Effect) ---
+        document.addEventListener('click', function(e) {
+            // Create ripple element
+            let ripple = document.createElement('div');
+            
+            // Set styles for the ripple
+            ripple.style.position = 'absolute';
+            ripple.style.width = '20px';
+            ripple.style.height = '20px';
+            ripple.style.background = 'rgba(16, 185, 129, 0.5)'; // Emerald green glow
+            ripple.style.borderRadius = '50%';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.transform = 'translate(-50%, -50%) scale(0)';
+            ripple.style.opacity = '1';
+            ripple.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+            ripple.style.zIndex = '99999';
+            
+            // Position it
+            ripple.style.left = e.pageX + 'px';
+            ripple.style.top = e.pageY + 'px';
+            
+            document.body.appendChild(ripple);
+            
+            // Trigger animation
+            setTimeout(() => {
+                ripple.style.transform = 'translate(-50%, -50%) scale(4)';
+                ripple.style.opacity = '0';
+            }, 10);
+            
+            // Remove after animation
+            setTimeout(() => {
+                ripple.remove();
+            }, 500);
+        });
     </script>
     {% block scripts %}{% endblock %}
 </body>

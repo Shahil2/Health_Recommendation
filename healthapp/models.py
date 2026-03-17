@@ -62,6 +62,7 @@ class HealthProfile(models.Model):
     total_activities_completed = models.PositiveIntegerField(default=0)
 
     date_created = models.DateTimeField(auto_now_add=True)
+    is_premium = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.user.username}'s Health Profile"
