@@ -1,8 +1,12 @@
 {% extends 'healthapp/base.html' %}
 {% block container_class %}{% endblock %}
 {% block content %}
-<!-- Charts JS -->
+<!-- 3D Animation Container -->
+<div id="canvas-container" class="fixed inset-0 -z-20 w-full h-full pointer-events-none opacity-30"></div>
+
+<!-- External scripts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <div class="space-y-8">
     <!-- TOP SECTION: GREETING & QUOTE -->
@@ -83,7 +87,7 @@
                     <span class="text-xs font-normal text-gray-500">{{ today_log.date|date:"F d" }}</span>
                 </h3>
                 <div class="space-y-4">
-                    <a href="{% url 'toggle_activity' 'workout' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.workout_completed %}bg-emerald-500/10 border-emerald-500/30 text-emerald-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
+                    <a href="{% url 'gym_workout' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.workout_completed %}bg-emerald-500/10 border-emerald-500/30 text-emerald-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
                         <div class="flex items-center gap-3">
                             <span class="p-2 bg-white/5 rounded-lg">🏋️‍♂️</span>
                             <span class="font-medium">Daily Workout</span>
@@ -95,7 +99,7 @@
                         </div>
                     </a>
 
-                    <a href="{% url 'toggle_activity' 'diet' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.diet_followed %}bg-sky-500/10 border-sky-500/30 text-sky-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
+                    <a href="{% url 'health_plans' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.diet_followed %}bg-sky-500/10 border-sky-500/30 text-sky-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
                         <div class="flex items-center gap-3">
                             <span class="p-2 bg-white/5 rounded-lg">🥗</span>
                             <span class="font-medium">Healthy Diet</span>
@@ -107,7 +111,7 @@
                         </div>
                     </a>
 
-                    <a href="{% url 'toggle_activity' 'medicine' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.medicine_taken %}bg-pink-500/10 border-pink-500/30 text-pink-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
+                    <a href="{% url 'medicine_analyzer' %}" class="flex items-center justify-between p-4 rounded-2xl border transition-all {% if today_log.medicine_taken %}bg-pink-500/10 border-pink-500/30 text-pink-400{% else %}bg-white/5 border-white/5 text-gray-400 hover:bg-white/10{% endif %}">
                         <div class="flex items-center gap-3">
                             <span class="p-2 bg-white/5 rounded-lg">💊</span>
                             <span class="font-medium">Medicine Tracking</span>
@@ -301,5 +305,86 @@
             Android.showNotification("Daily Motivation ⚡", quoteText);
         }
     });
+
+    // --- 3D Background Animation (Three.js) ---
+    const init3D = () => {
+        const container = document.getElementById('canvas-container');
+        if (!container) return;
+
+        const scene = new THREE.Scene();
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        // Create abstract particle network
+        const geometry = new THREE.BufferGeometry();
+        const particlesCount = window.innerWidth < 768 ? 200 : 500;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            // Spread particles over a large area
+            posArray[i] = (Math.random() - 0.5) * 12;
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        
+        // Premium Material
+        const material = new THREE.PointsMaterial({
+            size: 0.045, // Increased particle size
+            color: 0x00e6ac, // Brilliant mint green to match your main theme
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+
+        const particlesMesh = new THREE.Points(geometry, material);
+        scene.add(particlesMesh);
+        camera.position.z = 4;
+
+        let mouseX = 0;
+        let mouseY = 0;
+
+        // Subtle mouse interaction
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) - 0.5;
+            mouseY = (event.clientY / window.innerHeight) - 0.5;
+        });
+
+        const clock = new THREE.Clock();
+
+        // Animation Loop
+        const animate = () => {
+            requestAnimationFrame(animate);
+            const elapsedTime = clock.getElapsedTime();
+            
+            // Auto rotation and wave motion
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = elapsedTime * 0.02;
+
+            // Interactive easing
+            particlesMesh.rotation.y += mouseX * 0.2;
+            particlesMesh.rotation.x += mouseY * 0.2;
+            
+            // Optional: gently bob up and down
+            particlesMesh.position.y = Math.sin(elapsedTime * 0.5) * 0.2;
+            
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize dynamically
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    };
+
+    // Load 3D scene when ready
+    window.addEventListener('load', init3D);
 </script>
 {% endblock %}

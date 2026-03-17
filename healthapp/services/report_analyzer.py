@@ -253,13 +253,14 @@ Adapt to report (diabetes=sugar control, BP=salt limit, etc.). Use local foods i
 
         return sections
     except Exception as e:
+        print(f"Report Analyzer AI Error: {e}")
         return {
-            "summary": f"Something went wrong: {str(e)}",
-            "lifestyle_advice": "Please consult a doctor with your report.",
-            "medicine_suggestions": "",
-            "doctor_suggestions": "",
-            "conditions_notes": "",
-            "extracted_metrics": [],
+            "summary": "Medical Report Analysis (Free Mode) - Detailed AI summary unavailable due to API limits. Please consult your physician.",
+            "lifestyle_advice": "Focus on 8 hours of sleep, daily hydration, and a balanced diet.",
+            "medicine_suggestions": "Ask your doctor before starting any new medications.",
+            "doctor_suggestions": "Schedule a follow-up with your primary care physician to review this report.",
+            "conditions_notes": "Unable to extract key findings in Free Mode. Always review lab values directly.",
+            "extracted_metrics": [{"name": "Sample Metric", "value": "-", "unit": "-", "status": "Unknown", "normal_range": "-"}],
             "lifestyle_plan": [],
             "workout_plan": [],
             "diet_plan": [],

@@ -58,7 +58,19 @@
     {% if report.conditions_notes %}
     <section class="mb-6 p-6 bg-[#121212]/80 backdrop-blur-xl rounded-2xl border border-white/5">
         <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-4">Key Findings</h3>
-        <div class="text-gray-300 space-y-1">{{ report.conditions_notes|linebreaks }}</div>
+        <ul class="text-gray-300 space-y-2">
+            {% for line in report.conditions_notes.splitlines %}
+                {% if line.strip %}
+                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">•</span>
+                    {% if "- " in line.strip|slice:":2" or "• " in line.strip|slice:":2" %}
+                        {{ line.strip|slice:"2:" }}
+                    {% else %}
+                        {{ line.strip }}
+                    {% endif %}
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </section>
     {% endif %}
 
@@ -118,8 +130,12 @@
             <div class="p-4 rounded-xl border border-white/10 bg-white/5">
                 <p class="text-sm font-bold text-white mb-3">{{ item.meal|default:"Meal" }}{% if item.tips %} <span class="text-xs font-normal text-gray-400">— {{ item.tips }}</span>{% endif %}</p>
                 <div class="space-y-2 text-sm">
-                    {% if item.foods %}<p class="text-gray-300"><span class="text-emerald-400">Eat:</span> {{ item.foods|join:", " }}</p>{% endif %}
-                    {% if item.avoid %}<p class="text-gray-400"><span class="text-amber-400">Avoid:</span> {{ item.avoid|join:", " }}</p>{% endif %}
+                    {% if item.foods %}
+                    <p class="text-gray-300"><span class="text-emerald-400">Eat:</span> {% for f in item.foods %}{{ f }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                    {% endif %}
+                    {% if item.avoid %}
+                    <p class="text-gray-400"><span class="text-amber-400">Avoid:</span> {% for a in item.avoid %}{{ a }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -131,7 +147,19 @@
     {% if not report.lifestyle_plan and report.lifestyle_advice %}
     <section class="mb-6 p-6 bg-[#121212]/80 backdrop-blur-xl rounded-2xl border border-white/5">
         <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-3">Lifestyle Tips</h3>
-        <ul class="space-y-2 text-gray-300">{{ report.lifestyle_advice|linebreaks }}</ul>
+        <ul class="space-y-2 text-gray-300">
+            {% for line in report.lifestyle_advice.splitlines %}
+                {% if line.strip %}
+                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">•</span>
+                    {% if "- " in line.strip|slice:":2" or "• " in line.strip|slice:":2" %}
+                        {{ line.strip|slice:"2:" }}
+                    {% else %}
+                        {{ line.strip }}
+                    {% endif %}
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </section>
     {% endif %}
 
@@ -139,7 +167,19 @@
     {% if report.medicine_suggestions %}
     <section class="mb-6 p-6 bg-[#121212]/80 backdrop-blur-xl rounded-2xl border border-white/5">
         <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-3">Medicine Tips</h3>
-        <ul class="space-y-1 text-gray-300">{{ report.medicine_suggestions|linebreaks }}</ul>
+        <ul class="space-y-2 text-gray-300">
+            {% for line in report.medicine_suggestions.splitlines %}
+                {% if line.strip %}
+                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">💊</span>
+                    {% if "- " in line.strip|slice:":2" or "• " in line.strip|slice:":2" %}
+                        {{ line.strip|slice:"2:" }}
+                    {% else %}
+                        {{ line.strip }}
+                    {% endif %}
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </section>
     {% endif %}
 
@@ -147,7 +187,19 @@
     {% if report.doctor_suggestions %}
     <section class="mb-6 p-6 bg-[#121212]/80 backdrop-blur-xl rounded-2xl border border-white/5">
         <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-wider mb-3">Doctors to See</h3>
-        <ul class="space-y-1 text-gray-300">{{ report.doctor_suggestions|linebreaks }}</ul>
+        <ul class="space-y-2 text-gray-300">
+            {% for line in report.doctor_suggestions.splitlines %}
+                {% if line.strip %}
+                <li class="flex items-start gap-2"><span class="text-emerald-400 mt-1">👨‍⚕️</span>
+                    {% if "- " in line.strip|slice:":2" or "• " in line.strip|slice:":2" %}
+                        {{ line.strip|slice:"2:" }}
+                    {% else %}
+                        {{ line.strip }}
+                    {% endif %}
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </section>
     {% endif %}
 

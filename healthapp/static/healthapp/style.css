@@ -222,3 +222,17 @@ label {
         width: 95%;
     }
 }
+
+/* ☀️ Light Theme via Smart CSS Inversion */
+html.light-theme {
+    filter: invert(1) hue-rotate(180deg);
+    background-color: #f7f7f7;
+}
+
+/* Prevent double inversion for elements that should remain normal */
+html.light-theme img,
+html.light-theme video,
+html.light-theme [style*="background-image"],
+html.light-theme .revert-invert {
+    filter: invert(1) hue-rotate(180deg);
+}

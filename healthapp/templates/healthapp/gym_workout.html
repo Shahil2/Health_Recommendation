@@ -2,8 +2,7 @@
 {% block container_class %}{% endblock %}
 {% block content %}
 <div class="fixed inset-0 -z-10 h-full w-full bg-[#070707]">
-    <div class="absolute top-[20%] right-[20%] w-[500px] h-[500px] bg-sky-600/10 rounded-full blur-[140px]"></div>
-    <div class="absolute bottom-0 left-[20%] w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[120px]"></div>
+    <div class="absolute inset-0 bg-cover bg-center bg-fixed bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=2000'); opacity: 0.2;"></div>
 </div>
 
 <nav class="sticky top-0 z-50 bg-[#070707]/80 backdrop-blur-md border-b border-white/5 px-8 py-5">
@@ -43,22 +42,135 @@
                 <p class="text-gray-400">Safety-first routine adapted to your specific health findings.</p>
             </a>
         </div>
-        {% endif %}
+        {% elif mode == 'normal' and not focus %}
+        <!-- Step 1.5: Focus Selection -->
+        <div class="text-center mb-12 animate-in slide-in-from-bottom flex flex-col items-center">
+            <span class="px-4 py-1 bg-sky-500/20 text-sky-400 text-xs font-bold rounded-full uppercase tracking-widest mb-6">Step 2: Target Area</span>
+            <h3 class="text-3xl font-bold text-white mb-6">What do you want to focus on?</h3>
+            <form method="GET" action="{% url 'gym_workout' %}" class="w-full max-w-2xl space-y-6">
+                <!-- Keep the mode parameter passing to next step -->
+                <input type="hidden" name="mode" value="normal">
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
+                     <label class="cursor-pointer group">
+                         <input type="radio" name="focus" value="Full Body" class="peer hidden" required>
+                         <div class="p-6 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-sky-500 peer-checked:bg-sky-500/20 hover:border-white/20 transition-all text-center h-full flex flex-col items-center justify-center">
+                             <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">🧍</div>
+                             <p class="text-white font-bold text-sm">Full Body</p>
+                         </div>
+                     </label>
+                     <label class="cursor-pointer group">
+                         <input type="radio" name="focus" value="Muscle Gain (Biceps, Triceps, Chest, Shoulders)" class="peer hidden">
+                         <div class="p-6 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-sky-500 peer-checked:bg-sky-500/20 hover:border-white/20 transition-all text-center h-full flex flex-col items-center justify-center">
+                             <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">💪</div>
+                             <p class="text-white font-bold text-sm">Arms/Chest</p>
+                         </div>
+                     </label>
+                     <label class="cursor-pointer group">
+                         <input type="radio" name="focus" value="Legs & Glutes" class="peer hidden">
+                         <div class="p-6 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-sky-500 peer-checked:bg-sky-500/20 hover:border-white/20 transition-all text-center h-full flex flex-col items-center justify-center">
+                             <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">🦵</div>
+                             <p class="text-white font-bold text-sm">Legs & Glutes</p>
+                         </div>
+                     </label>
+                     <label class="cursor-pointer group">
+                         <input type="radio" name="focus" value="Six Pack Core and Abs" class="peer hidden">
+                         <div class="p-6 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-sky-500 peer-checked:bg-sky-500/20 hover:border-white/20 transition-all text-center h-full flex flex-col items-center justify-center">
+                             <div class="text-3xl mb-3 group-hover:scale-110 transition-transform">🍫</div>
+                             <p class="text-white font-bold text-sm">Core / Abs</p>
+                         </div>
+                     </label>
+                </div>
 
-        <!-- Step 2: Type Selection (Only if mode is picked) -->
-        {% if mode and not type %}
-        <div class="text-center mb-12">
-            <span class="px-4 py-1 bg-sky-500/20 text-sky-400 text-xs font-bold rounded-full uppercase tracking-widest">Step 2: Choose Equipment</span>
+                <div class="mt-8 text-left">
+                    <p class="text-sm font-bold text-gray-300 mb-3 ml-1">Or enter a custom fitness goal:</p>
+                    <input type="text" name="custom_focus" placeholder="e.g. 'I want big shoulders and a wide back'" class="w-full bg-[#121212] border border-white/10 rounded-2xl px-6 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                </div>
+
+                <button type="submit" class="w-full py-5 bg-gradient-to-r from-sky-500 to-indigo-500 text-white shadow-xl shadow-sky-500/20 font-bold text-lg rounded-2xl hover:scale-[1.02] transition-transform mt-6">Next Step &rarr;</button>
+            </form>
+            <div class="text-center mt-8">
+                <a href="{% url 'gym_workout' %}" class="text-gray-500 hover:text-white transition-colors">← Start Over</a>
+            </div>
+        </div>
+
+        <!-- Step 1.5: Medical Report Selection -->
+        {% elif mode == 'medical' and not report_id %}
+        <div class="text-center mb-12 animate-in slide-in-from-bottom flex flex-col items-center">
+            <span class="px-4 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full uppercase tracking-widest mb-6">Step 2: Choose Source Data</span>
+            <h3 class="text-3xl font-bold text-white mb-6">Which report should we analyze?</h3>
+            
+            {% if reports %}
+            <form method="GET" action="{% url 'gym_workout' %}" class="w-full max-w-2xl space-y-4">
+                <input type="hidden" name="mode" value="medical">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                    {% for file in reports %}
+                    <label class="cursor-pointer group">
+                        <input type="radio" name="report_id" value="{{ file.id }}" class="peer hidden" required>
+                        <div class="p-6 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-red-500 peer-checked:bg-red-500/20 hover:border-white/20 transition-all">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-xl group-hover:scale-110 transition-transform">📄</div>
+                                <div class="overflow-hidden">
+                                    <p class="text-white font-bold text-sm truncate">{{ file.file.name|slice:"15:"|default:"Uploaded Report" }}</p>
+                                    <p class="text-xs text-gray-500">{{ file.uploaded_at|date:"M d, Y" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-8 border-t border-white/10 pt-8">
+                    <h4 class="text-xl font-bold text-white mb-4 text-center">What is your primary objective?</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="focus" value="Weight Gain / Muscle Building" class="peer hidden" required>
+                            <div class="p-4 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-red-500 peer-checked:bg-red-500/20 hover:border-white/20 transition-all text-center">
+                                <span class="text-2xl block mb-2">📈</span>
+                                <span class="text-white font-bold">Weight Gain / Muscle</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input type="radio" name="focus" value="Weight Loss / Shredding" class="peer hidden" required>
+                            <div class="p-4 bg-[#121212] border border-white/5 rounded-2xl peer-checked:border-red-500 peer-checked:bg-red-500/20 hover:border-white/20 transition-all text-center">
+                                <span class="text-2xl block mb-2">📉</span>
+                                <span class="text-white font-bold">Weight Loss / Shred</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full py-5 bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-xl shadow-red-500/20 font-bold text-lg rounded-2xl hover:scale-[1.02] transition-transform mt-6">Next Step &rarr;</button>
+            </form>
+            {% else %}
+            <div class="bg-red-500/10 border border-red-500/20 p-8 rounded-[32px] text-center w-full max-w-xl">
+                <div class="text-4xl mb-4">⚠️</div>
+                <h4 class="text-red-400 font-bold text-xl mb-2">No Reports Found</h4>
+                <p class="text-gray-400 mb-6">You need to upload at least one medical report for the AI to analyze.</p>
+                <a href="{% url 'report_upload' %}" class="inline-block px-8 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors font-bold">Upload Report Now</a>
+            </div>
+            {% endif %}
+            
+            <div class="text-center mt-8">
+                <a href="{% url 'gym_workout' %}" class="text-gray-500 hover:text-white transition-colors">← Start Over</a>
+            </div>
+        </div>
+
+        <!-- Step 3: Type Selection -->
+        {% elif mode and not type %}
+        <div class="text-center mb-12 animate-in slide-in-from-bottom">
+            <span class="px-4 py-1 bg-sky-500/20 text-sky-400 text-xs font-bold rounded-full uppercase tracking-widest block mb-4">Step {% if mode == 'medical' %}2{% else %}3{% endif %}: Choose Equipment</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <a href="?mode={{ mode }}&type=home" class="group p-8 bg-[#121212] border border-white/5 rounded-[40px] hover:border-amber-500/30 transition-all text-center">
+            <a href="?mode={{ mode }}&type=home{% if focus %}&focus={{ focus|urlencode }}{% endif %}{% if report_id %}&report_id={{ report_id }}{% endif %}" class="group p-8 bg-[#121212] border border-white/5 rounded-[40px] hover:border-amber-500/30 transition-all text-center">
                 <div class="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                     <span class="text-3xl">🏠</span>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">Home Workout</h3>
                 <p class="text-gray-400">No equipment needed. Bodyweight and household items.</p>
             </a>
-            <a href="?mode={{ mode }}&type=gym" class="group p-8 bg-[#121212] border border-white/5 rounded-[40px] hover:border-sky-500/30 transition-all text-center">
+            <a href="?mode={{ mode }}&type=gym{% if focus %}&focus={{ focus|urlencode }}{% endif %}{% if report_id %}&report_id={{ report_id }}{% endif %}" class="group p-8 bg-[#121212] border border-white/5 rounded-[40px] hover:border-sky-500/30 transition-all text-center">
                 <div class="w-16 h-16 bg-sky-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
                     <span class="text-3xl">🏋️‍♂️</span>
                 </div>
@@ -126,6 +238,12 @@
                 </div>
             </div>
         {% endfor %}
+    </div>
+    
+    <div class="mt-16 text-center animate-in slide-in-from-bottom-8 duration-700">
+        <a href="{% url 'toggle_activity' 'workout' %}" onclick="alert('Great job finishing your workout today! Your streak is updated.');" class="inline-flex items-center justify-center px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-400 text-black font-black text-xl rounded-full hover:shadow-[0_0_50px_rgba(16,185,129,0.5)] hover:scale-105 transition-all">
+            <span>✅ I Have Completed This Workout</span>
+        </a>
     </div>
     {% endif %}
     {% endif %}

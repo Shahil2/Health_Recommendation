@@ -252,6 +252,10 @@ def health_profile(request):
 # ---------------- AUTH ----------------
 def signup(request):
     if request.method == 'POST':
+        import re
+        from django.core.mail import send_mail
+        from django.conf import settings
+
         username = request.POST.get('username', '')
         email = request.POST.get('email', '')
         password1 = request.POST.get('password1', '')
@@ -261,11 +265,85 @@ def signup(request):
             messages.error(request, "Passwords do not match.")
             return redirect('signup')
 
+        # Password Policy: 1 Capital, 1 Number, 1 Special Character
+        if not re.search(r'[A-Z]', password1) or not re.search(r'\d', password1) or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password1):
+            messages.error(request, "Password must contain at least one capital letter, one number, and one special character.")
+            return redirect('signup')
+
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return redirect('signup')
 
         User.objects.create_user(username=username, email=email, password=password1)
+
+        try:
+            welcome_subject = 'Welcome to Smart Health - Your Journey Begins! 🚀'
+            
+            # Fallback plain text massage
+            welcome_message = f"""Hello {username}, Welcome to Smart Health! 🎉
+We are thrilled to have you onboard. Log in to complete your Health Profile, upload Medical Reports, and get AI-personalized routines."""
+            
+            # Beautiful HTML Message
+            html_message = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #070707; color: #ffffff; padding: 20px; }}
+                    .container {{ max-width: 600px; margin: 0 auto; background-color: #121212; border-radius: 20px; border: 1px solid #333; overflow: hidden; }}
+                    .header {{ background: linear-gradient(135deg, #10b981 0%, #0ea5e9 100%); padding: 30px 20px; text-align: center; }}
+                    .header h1 {{ margin: 0; color: #ffffff; font-size: 28px; letter-spacing: 1px; }}
+                    .content {{ padding: 30px; line-height: 1.6; color: #d1d5db; }}
+                    .content h2 {{ color: #10b981; margin-top: 0; }}
+                    .btn {{ display: inline-block; padding: 12px 25px; background: linear-gradient(to right, #10b981, #14b8a6); color: #000000; text-decoration: none; font-weight: bold; border-radius: 10px; margin: 20px 0; text-align: center; }}
+                    ul {{ padding-left: 20px; }}
+                    li {{ margin-bottom: 10px; }}
+                    .footer {{ background-color: #1a1a1a; padding: 20px; text-align: center; font-size: 12px; color: #6b7280; border-top: 1px solid #333; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Smart Health</h1>
+                    </div>
+                    <div class="content">
+                        <h2>Hello {username}! 🎉</h2>
+                        <p>Your account has been successfully created. We are absolutely thrilled to have you onboard.</p>
+                        <p>Smart Health is designed to be your ultimate AI-powered companion for a healthier, stronger, and more mindful life.</p>
+                        
+                        <h3 style="color: #ffffff; margin-top: 25px;">Quick Start Guide:</h3>
+                        <ul>
+                            <li><strong>🎯 Complete Your Health Profile:</strong> Navigate to the Dashboard and log your current fitness metrics.</li>
+                            <li><strong>📄 Upload a Medical Report:</strong> Let our AI analyze your data to generate hyper-personalized workout and diet plans.</li>
+                            <li><strong>🔥 Explore Motivation:</strong> Keep your streak alive and check daily for new motivational quotes.</li>
+                            <li><strong>🧘‍♀️ Yoga & Therapy:</strong> Use our AI therapeutic tools when you need to relax or recover.</li>
+                        </ul>
+                        
+                        <p>If you ever have any questions, feedback, or feature requests, reach us straight through the in-app Feedback page.</p>
+                        
+                        <p>Let's begin the journey to your best self.</p>
+                        
+                        <p>Best regards,<br><strong style="color: #10b981;">The Smart Health Team</strong></p>
+                    </div>
+                    <div class="footer">
+                        <p>&copy; 2026 Smart Health. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            send_mail(
+                welcome_subject,
+                welcome_message,
+                settings.DEFAULT_FROM_EMAIL,
+                [email],
+                fail_silently=True,
+                html_message=html_message
+            )
+        except Exception as e:
+            print(f"Email failed to send: {e}")
+
         messages.success(request, "Account created successfully!")
         return redirect('login')
 
@@ -395,8 +473,27 @@ def health_plans(request):
         messages.warning(request, "Please complete your Health Profile first to get personalized plans.")
         return redirect('health_profile')
 
-    plans = generate_health_plans(profile)
-    return render(request, 'healthapp/health_plans.html', {'plans': plans})
+    mode = request.GET.get('mode') # medical or normal
+    goal = request.GET.get('custom_goal') or request.GET.get('goal')
+    report_id = request.GET.get('report_id')
+    
+    reports = None
+    if mode == 'medical':
+        reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
+
+    plans = None
+    if mode == 'normal' and goal:
+        plans = generate_health_plans(profile, mode=mode, goal=goal)
+    elif mode == 'medical' and report_id:
+        plans = generate_health_plans(profile, mode=mode, report_id=report_id)
+
+    return render(request, 'healthapp/health_plans.html', {
+        'plans': plans,
+        'mode': mode,
+        'goal': goal,
+        'reports': reports,
+        'report_id': report_id
+    })
 
 
 # ---------------- GYM WORKOUT ----------------
@@ -411,19 +508,29 @@ def gym_workout(request):
     mode = request.GET.get('mode') # medical or normal
     workout_type = request.GET.get('type') # gym or home
     
+    # Priority to custom focus, fallback to radio focus
+    focus = request.GET.get('custom_focus') or request.GET.get('focus')
+    report_id = request.GET.get('report_id')
+    
+    reports = None
+    if mode == 'medical':
+        reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
+        
     workout = None
     if mode and workout_type:
         if workout_type == 'gym':
-            workout = generate_gym_workout(profile, mode=mode)
+            workout = generate_gym_workout(profile, mode=mode, focus=focus, report_id=report_id)
         else:
-            workout = generate_home_workout(profile, mode=mode)
+            workout = generate_home_workout(profile, mode=mode, focus=focus, report_id=report_id)
 
     return render(request, 'healthapp/gym_workout.html', {
         'workout': workout, 
         'mode': mode,
-        'type': workout_type
+        'type': workout_type,
+        'focus': focus,
+        'reports': reports,
+        'report_id': report_id
     })
-
 
 # ---------------- HOME WORKOUT ----------------
 @login_required(login_url='login')
@@ -455,12 +562,22 @@ def yoga(request):
         messages.warning(request, "Please complete your Health Profile first to get a personalized Yoga journey.")
         return redirect('health_profile')
 
-    mode = request.GET.get('mode', 'normal') # medical or normal
-    yoga_plan = generate_yoga_workout(profile, mode=mode)
+    mode = request.GET.get('mode') # medical or normal
+    report_id = request.GET.get('report_id')
+
+    reports = None
+    if mode == 'medical':
+        reports = MedicalReport.objects.filter(user=request.user).order_by('-uploaded_at')
+
+    yoga_plan = None
+    if mode == 'normal' or (mode == 'medical' and report_id):
+        yoga_plan = generate_yoga_workout(profile, mode=mode, report_id=report_id)
 
     return render(request, 'healthapp/yoga.html', {
         'yoga_plan': yoga_plan,
         'mode': mode,
+        'report_id': report_id,
+        'reports': reports,
     })
 @login_required(login_url='login')
 def motivation(request):
@@ -491,19 +608,22 @@ def feedback(request):
             message=message
         )
 
-        # Send email to developer (staff users)
+        # Send email to the system's own email address (so developer catches it) + any staff users
         try:
+            from django.conf import settings
             staff_emails = [u.email for u in User.objects.filter(is_staff=True) if u.email]
-            if staff_emails:
+            recipient_list = list(set([settings.EMAIL_HOST_USER] + staff_emails))
+            
+            if recipient_list:
                 send_mail(
                     subject=f"New App Feedback: {subject}",
                     message=f"From: {name} ({email})\n\nMessage:\n{message}",
-                    from_email=None,
-                    recipient_list=staff_emails,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=recipient_list,
                     fail_silently=True,
                 )
-        except:
-            pass
+        except Exception as e:
+            print("Feedback Email Error:", e)
 
         messages.success(request, "Thank you for your feedback! It has been sent to the developer.")
         return redirect('home')
