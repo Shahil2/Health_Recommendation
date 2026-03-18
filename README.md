@@ -1,68 +1,33 @@
-🧠 Smart Health – AI Powered Health Profile Analyzer
+# 🧠 Smart Health – AI Powered Health Profile Analyzer
 
-An AI-powered web application that analyzes a user’s health profile and provides personalized diet, exercise, and lifestyle recommendations using rule-based logic and generative AI.
-This project is designed as a final-year academic project and portfolio-ready health-tech application.
-____________________________________________________________________________________________________________________________________________________________________________________________
+**Smart Health** is an advanced AI-integrated healthcare application designed to provide personalized health insights. By combining medical vitals analysis with Google's Gemini LLM, it offers a holistic view of your well-being.
 
-🚀 Features
-🩺 Health profile analysis using user inputs
-📊 Health score calculation (0–100)
-🧠 AI-powered health recommendations
-⚙️ Rule-based fallback recommendations
-🌙 Lifestyle improvement guidance (sleep, habits, smoking, alcohol)
-📈 Health trend visualization
-🗂 Recommendation history tracking
-📄 Export health report (PDF/JSON)
-🌙 Modern dark healthcare dashboard UI
+---
 
-🛠 Tech Stack
-Backend
-FastAPI
-Python 3.10+
-MongoDB
-Rule-based health engine
-AI via Emergent LLM (Gemini / OpenAI / Claude)
-Frontend
-React.js
-HTML, CSS, JavaScript
-Dark modern UI with gradients
-AI / ML
-Large Language Models for health recommendations
-Prompt-engineered for safe, non-diagnostic outputs
+## 🚀 Key Features
+- **🩺 Health Score Analysis**: Instant 0–100 score based on BMI, BP, Sugar, and habits.
+- **📄 AI Medical Report Decoder**: Upload reports (PDF/Image) for an easy-to-understand AI summary.
+- **🥗 Personalized Health Plans**: AI-generated diet and workout routines tailored to your vitals.
+- **📈 Activity Dashboard**: Track your daily streaks and health trends.
+- **🌙 Modern UI**: Premium dark-mode dashboard with glassmorphism aesthetics.
 
-🧩 System Architecture
-Frontend (React)
-   ↓
-FastAPI Backend
-   ↓
-Rule-Based Engine + AI Recommendation Engine
-   ↓
-MongoDB (User Data & History)
+## 🛠 Tech Stack
+- **Backend**: Django (Python) 🐍
+- **AI**: Google Gemini API (LLM & Vision) ✨
+- **Database**: SQLite 🗄️
+- **Frontend**: Django Templates + CSS + JS 🎨
 
-📥 User Inputs
-Age
-Gender
-Height & Weight
-BMI (calculated)
-Blood Pressure
-Blood Sugar Level
-Sugar Test Type (Fasting / Random)
-Activity Level
-Sleep Duration
-Smoking & Alcohol Status
+## 📥 Quick Start
+1. **Configure Environment**:
+   Add your `GEMINI_API_KEY` to a `.env` file.
+2. **Install Dependencies**:
+   `pip install -r requirements.txt` (or manually install django, python-dotenv, google-generativeai)
+3. **Run App**:
+   `python manage.py migrate`
+   `python manage.py runserver`
 
-📤 Outputs
-Health Score (0–100)
-Risk Level (Low / Moderate / High)
+## 📄 Documentation
+For detailed technical info, architecture, and schema details, see [DOCUMENTATION.md](./DOCUMENTATION.md).
 
-Personalized Recommendations:
-🥗 Diet
-🏃 Exercise
-🧘 Lifestyle (primary focus)
-⚠️ Health Warnings (if any)
-🧠 AI Safety & Ethics
-❌ No medical diagnosis
-✅ Informational guidance only
-✅ Non-alarming language
-✅ Rule-based fallback if AI fails
-⚠️ Users advised to consult healthcare professionals
+---
+*Disclaimer: This application is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.*
